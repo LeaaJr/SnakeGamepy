@@ -10,10 +10,10 @@ high_score = 0
 
 # Set up the screen
 wn = turtle.Screen()
-wn.title("Snake Game with Tongue")
+wn.title("Snake Game with Tongue and Eyes")
 wn.bgcolor("grey")
 wn.setup(width=600, height=600)
-wn.tracer(0) # Turns off the screen updates
+wn.tracer(0)  # Turns off the screen updates
 
 # Snake head
 head = turtle.Turtle()
@@ -32,6 +32,23 @@ tongue.color("red")
 tongue.penup()
 tongue.shapesize(stretch_wid=0.2, stretch_len=0.5)  # Small triangle for tongue
 tongue.hideturtle()
+
+# Eyes
+eye_left = turtle.Turtle()
+eye_left.speed(0)
+eye_left.shape("circle")
+eye_left.color("white")
+eye_left.penup()
+eye_left.shapesize(stretch_wid=0.2, stretch_len=0.2)  # Small circles for eyes
+eye_left.hideturtle()
+
+eye_right = turtle.Turtle()
+eye_right.speed(0)
+eye_right.shape("circle")
+eye_right.color("white")
+eye_right.penup()
+eye_right.shapesize(stretch_wid=0.2, stretch_len=0.2)  # Small circles for eyes
+eye_right.hideturtle()
 
 # Snake food
 food = turtle.Turtle()
@@ -103,6 +120,23 @@ def move_tongue():
     elif head.direction == "right":
         tongue.setheading(0)  # Tongue pointing right
         tongue.setx(head.xcor() + 15)
+
+# Function to move the eyes in sync with the head
+def move_eyes():
+    eye_left.showturtle()
+    eye_right.showturtle()
+    if head.direction == "up":
+        eye_left.goto(head.xcor() - 5, head.ycor() + 10)
+        eye_right.goto(head.xcor() + 5, head.ycor() + 10)
+    elif head.direction == "down":
+        eye_left.goto(head.xcor() - 5, head.ycor() - 10)
+        eye_right.goto(head.xcor() + 5, head.ycor() - 10)
+    elif head.direction == "left":
+        eye_left.goto(head.xcor() - 10, head.ycor() + 5)
+        eye_right.goto(head.xcor() - 10, head.ycor() - 5)
+    elif head.direction == "right":
+        eye_left.goto(head.xcor() + 10, head.ycor() + 5)
+        eye_right.goto(head.xcor() + 10, head.ycor() - 5)
 
 # Keyboard bindings
 wn.listen()
@@ -178,6 +212,7 @@ while True:
 
     move()    
     move_tongue()  # Move the tongue with the head
+    move_eyes()  # Move the eyes with the head
 
     # Check for head collision with the body segments
     for segment in segments:
