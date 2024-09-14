@@ -10,7 +10,7 @@ high_score = 0
 
 # Set up the screen
 wn = turtle.Screen()
-wn.title("Snake Game with Tongue and Eyes")
+wn.title("Snake Game with Details and Restart")
 wn.bgcolor("grey")
 wn.setup(width=600, height=600)
 wn.tracer(0)  # Turns off the screen updates
@@ -69,6 +69,14 @@ pen.penup()
 pen.hideturtle()
 pen.goto(0, 260)
 pen.write("Score: 0  High Score: 0", align="center", font=("Courier", 24, "normal"))
+
+# Restart message turtle
+restart_message = turtle.Turtle()
+restart_message.speed(0)
+restart_message.shape("square")
+restart_message.color("white")
+restart_message.penup()
+restart_message.hideturtle()
 
 # Functions to control direction
 def go_up():
@@ -138,12 +146,47 @@ def move_eyes():
         eye_left.goto(head.xcor() + 10, head.ycor() + 5)
         eye_right.goto(head.xcor() + 10, head.ycor() - 5)
 
+# Function to add dark stripes to the snake's body
+def add_stripes(segment):
+    segment.penup()
+    segment.color("green")  # Base color of the segment
+    segment.goto(segment.xcor() - 10, segment.ycor())  # Position for the stripes
+    segment.pendown()
+    segment.color("darkgreen")
+    segment.goto(segment.xcor() + 20, segment.ycor())  # Horizontal stripe
+    segment.penup()
+    segment.goto(segment.xcor() - 10, segment.ycor() - 5)
+    segment.pendown()
+    segment.goto(segment.xcor() + 20, segment.ycor())  # Another horizontal stripe
+    segment.penup()
+
+# Function to display restart message
+def display_restart_message():
+    restart_message.clear()
+    restart_message.goto(0, 0)
+    restart_message.write(f"Game Over\nScore: {score}\nPress Enter to Restart", align="center", font=("Courier", 24, "normal"))
+
+# Function to restart the game
+def restart_game():
+    global score, delay
+    score = 0
+    delay = 0.1
+    head.goto(0, 0)
+    head.direction = "stop"
+    for segment in segments:
+        segment.goto(1000, 1000)
+    segments.clear()
+    pen.clear()
+    pen.write("Score: 0  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
+    restart_message.clear()
+
 # Keyboard bindings
 wn.listen()
 wn.onkeypress(go_up, "w")
 wn.onkeypress(go_down, "s")
 wn.onkeypress(go_left, "a")
 wn.onkeypress(go_right, "d")
+wn.onkeypress(restart_game, "Return")  # Restart the game with "Enter"
 
 # Main game loop
 while True:
@@ -152,24 +195,14 @@ while True:
     # Check for a collision with the border
     if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
         time.sleep(1)
+        display_restart_message()
+
         head.goto(0, 0)
         head.direction = "stop"
 
         # Hide the segments
         for segment in segments:
             segment.goto(1000, 1000)
-
-        # Clear the segments list
-        segments.clear()
-
-        # Reset the score
-        score = 0
-
-        # Reset the delay
-        delay = 0.1
-
-        pen.clear()
-        pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
     # Check for a collision with the food
     if head.distance(food) < 20:
@@ -185,6 +218,9 @@ while True:
         new_segment.color("green")
         new_segment.penup()
         segments.append(new_segment)
+
+        # Add stripes to the new segment
+        add_stripes(new_segment)
 
         # Shorten the delay
         delay -= 0.001
@@ -210,33 +246,22 @@ while True:
         y = head.ycor()
         segments[0].goto(x, y)
 
-    move()    
-    move_tongue()  # Move the tongue with the head
-    move_eyes()  # Move the eyes with the head
+    move()
+    move_tongue()
+    move_eyes()
 
     # Check for head collision with the body segments
     for segment in segments:
         if segment.distance(head) < 20:
             time.sleep(1)
+            display_restart_message()
+
             head.goto(0, 0)
             head.direction = "stop"
 
             # Hide the segments
             for segment in segments:
                 segment.goto(1000, 1000)
-
-            # Clear the segments list
-            segments.clear()
-
-            # Reset the score
-            score = 0
-
-            # Reset the delay
-            delay = 0.1
-
-            # Update the score display
-            pen.clear()
-            pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
     time.sleep(delay)
 
